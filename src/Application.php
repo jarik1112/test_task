@@ -62,6 +62,7 @@ class Application implements ApplicationInterface, ConstructorInjectableInterfac
         $notLoggedPath = array(
             '/login',
             '/register',
+            '/confirm',
             '/confirmation'
         );
         if($_SESSION['logged_in'] === false && !in_array($this->ioc->build('request')->getPath(),$notLoggedPath)){

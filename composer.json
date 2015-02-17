@@ -1,0 +1,12 @@
+{
+    "name": "jarik/test_task",
+    "require": {
+        "mandrill/mandrill": "1.0.*"
+    },
+    "authors": [
+        {
+            "name": "jarik",
+            "email": "jarik1112@gmail.com"
+        }
+    ]
+}

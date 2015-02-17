@@ -9,6 +9,7 @@ define('ROOT_DIR',realpath(__DIR__));
 define('VIEW_DIR',ROOT_DIR.'/view');
 
 require_once __DIR__.'/src/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 $container = \Framework\IocContainer::getInstance();
 
@@ -24,4 +25,7 @@ $container->register('viewConfig',array(
 ));
 $container->register('dbConfig',include ROOT_DIR.'/config/db.php' );
 $container->register('userStorage','Framework\DbUserStorage');
+//$container->register('userStorage','Framework\XmlUserStorage');
+$container->register('emailConfig',include ROOT_DIR.'/config/email.php' );
+$container->register('mailer','Framework\MailComponent');
 $container->build('app')->run();

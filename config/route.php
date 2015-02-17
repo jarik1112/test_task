@@ -14,6 +14,10 @@ return array(
     '/'             => array('controller' => 'Framework\Controllers\IndexController'),
     '/login'        => array('controller' => 'Framework\Controllers\LoginController'),
     '/register'     => array('controller' => 'Framework\Controllers\RegisterController'),
+    '/confirm' => array(
+        'controller' => 'Framework\Controllers\RegisterController',
+        'action'     => 'confirm'
+    ),
     '/confirmation' => array(
         'controller' => 'Framework\Controllers\RegisterController',
         'action'     => 'confirmationSent'

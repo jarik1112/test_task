@@ -65,6 +65,24 @@ class DbUserStorage implements UserStorageInterface, ConstructorInjectableInterf
     }
 
     /**
+     * Return model columns
+     *
+     * @return array
+     */
+    protected function getColumns()
+    {
+        return array(
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'password',
+            'is_email_confirmed',
+            'confirm_hash'
+        );
+    }
+
+    /**
      * Save user data
      *
      * @param array $user
@@ -72,7 +90,39 @@ class DbUserStorage implements UserStorageInterface, ConstructorInjectableInterf
      */
     public function save($user)
     {
-        $db = $this->getConnection();
+        $db               = $this->getConnection();
+        $toBind           = array();
+        $toSql            = array();
+        $availableColumns = $this->getColumns();
+        $stmt             = null;
+        $attrs            = array();
+        $passInfo = password_get_info($user['password']);
+        if($passInfo['algoName'] == 'unknown'){
+            $user['password'] = password_hash($user['password'],PASSWORD_BCRYPT);
+        }
+        foreach ($user as $attribute => $value) {
+            if (in_array($attribute, $availableColumns) && $attribute != 'id') {
+                $toBind[':' . $attribute] = $value === "" ? null : $value;
+                $toSql[]                  = "`{$attribute}` =:{$attribute} ";
+                $attrs[]                  = $attribute;
+            }
+        }
+        if ($toBind) {
+            if (isset($user['id'])) {
+                // Update
+                if ($toSql) {
+                    $toBind[':id'] = $user['id'];
+                    $sql           = 'UPDATE user SET ' . join(',', $toSql) . ' WHERE id = :id ';
+                }
+            } else {
+                // Insert
+                $sql = 'INSERT INTO user(' . join(',', $attrs) . ') VALUES (' . join(',', array_keys($toBind)) . ')';
+            }
+            $stmt = $db->prepare($sql);
+            $stmt->execute($toBind);
+            return $stmt->rowCount();
+        }
+        return false;
     }
 
     /**
@@ -87,5 +137,25 @@ class DbUserStorage implements UserStorageInterface, ConstructorInjectableInterf
         return !$result;
     }
 
+    public function findBy(array $attributes)
+    {
+        $user                = array();
+        $where               = array();
+        $toBind              = array();
+        $availableAttributes = $this->getColumns();
+        foreach ($attributes as $key => $value) {
+            if (in_array($key, $availableAttributes)) {
+                $attr          = ':' . $key;
+                $where[]       = "`{$key}` = {$attr}";
+                $toBind[$attr] = $value;
+            }
+        }
+        if ($where) {
+            $stmt = $this->getConnection()->prepare("SELECT * FROM user WHERE " . join(',', $where));
+            $stmt->execute($toBind);
+            $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        }
+        return $user;
+    }
 
 }
