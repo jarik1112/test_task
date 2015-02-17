@@ -18,6 +18,7 @@ class BaseController implements ControllerInterface
     public function __construct(IocContainerInterface $container)
     {
         $this->ioc = $container;
+
     }
 
 }

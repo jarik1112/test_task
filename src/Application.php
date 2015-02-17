@@ -30,9 +30,9 @@ class Application implements ApplicationInterface, ConstructorInjectableInterfac
      */
     public function run()
     {
+        $this->handleSession();
         $router     = $this->ioc->build('router');
         $controller = $router->getController();
-
         if ($controller !== false) {
             /** @var \Framework\Interfaces\ResponseInterface $response */
             $this->ioc->register('currentController', $controller);
@@ -40,24 +40,41 @@ class Application implements ApplicationInterface, ConstructorInjectableInterfac
             $action     = $router->getAction();
             $methods    = get_class_methods($controller);
             if (in_array($action, $methods)) {
-                $response = $controller->{$action}();
+                try{
+                    $response = $controller->{$action}();
+                }catch (\Exception $e){
+                    $response = $this->getErrorResponse(500);
+                }
             } else {
-                $response = $this->getErrorResponse();
+                $response = $this->getErrorResponse(404);
             }
-        }elseif($router->isRedirect()){
-
-        } else {
-            $response = $this->getErrorResponse();
+        }else {
+            $response = $this->getErrorResponse(404);
         }
         $response->send();
     }
-
+    protected function handleSession()
+    {
+        session_start();
+        if(!isset($_SESSION['logged_in'])){
+            $_SESSION['logged_in'] = false;
+        }
+        $notLoggedPath = array(
+            '/login',
+            '/register',
+            '/confirmation'
+        );
+        if($_SESSION['logged_in'] === false && !in_array($this->ioc->build('request')->getPath(),$notLoggedPath)){
+            $this->ioc->build('response')->redirect('/login');
+            exit();
+        }
+    }
     /**
      * @return \Framework\Interfaces\ResponseInterface
      */
-    protected function getErrorResponse()
+    protected function getErrorResponse($code)
     {
-        return $this->ioc->build('errorController')->actionIndex();
+        return $this->ioc->build('errorController')->index($code);
     }
 
     protected function redirect($to)

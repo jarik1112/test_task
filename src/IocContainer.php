@@ -40,13 +40,13 @@ class IocContainer implements IocContainerInterface
         }else{
             /** If registered is name of class*/
             if(is_string(self::$registered[$name]) && class_exists(self::$registered[$name])){
-
                 /** And it has ConstructorInjectableInterface  */
                 if(is_subclass_of(self::$registered[$name],'Framework\Interfaces\ConstructorInjectableInterface')){
                     $result = new self::$registered[$name](self::getInstance());
                 }else{
                     $result = new self::$registered[$name];
                 }
+                self::$registered[$name] = $result;
             }
             elseif(is_object(self::$registered[$name]) || is_array(self::$registered[$name])){
                 $result = self::$registered[$name];
@@ -54,6 +54,7 @@ class IocContainer implements IocContainerInterface
         }
         return $result;
     }
+
 
     private function __construct() { }
 

@@ -22,7 +22,7 @@ class ErrorController extends BaseController
      * Index action
      * @return Response
      */
-    public function actionIndex()
+    public function index($code)
     {
         /** @var \Framework\Response $response */
         $response = $this->ioc->build('response');

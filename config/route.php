@@ -11,7 +11,11 @@
 
 return array(
     /** path => array params */
-    '/'         => array('redirect' => '/login'),
-    '/login'    => array('controller' => 'Framework\Controllers\LoginController'),
-    '/register' => array('controller' => 'Framework\Controllers\RegisterController'),
+    '/'             => array('controller' => 'Framework\Controllers\IndexController'),
+    '/login'        => array('controller' => 'Framework\Controllers\LoginController'),
+    '/register'     => array('controller' => 'Framework\Controllers\RegisterController'),
+    '/confirmation' => array(
+        'controller' => 'Framework\Controllers\RegisterController',
+        'action'     => 'confirmationSent'
+    ),
 );

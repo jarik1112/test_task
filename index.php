@@ -12,7 +12,7 @@ require_once __DIR__.'/src/autoload.php';
 
 $container = \Framework\IocContainer::getInstance();
 
-$container->register('routeConfig',include __DIR__.'/config/route.php');
+$container->register('routeConfig',include ROOT_DIR.'/config/route.php');
 $container->register('router','Framework\Router');
 $container->register('app','Framework\Application');
 $container->register('request','Framework\Request');
@@ -22,4 +22,6 @@ $container->register('viewConfig',array(
     'layout'=>'/layout.php',
     'viewDir'=>VIEW_DIR
 ));
+$container->register('dbConfig',include ROOT_DIR.'/config/db.php' );
+$container->register('userStorage','Framework\DbUserStorage');
 $container->build('app')->run();
