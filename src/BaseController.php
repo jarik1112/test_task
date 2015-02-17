@@ -13,7 +13,7 @@ use Framework\Interfaces\IocContainerInterface;
 
 class BaseController implements ControllerInterface
 {
-    private $ioc;
+    protected $ioc;
 
     public function __construct(IocContainerInterface $container)
     {

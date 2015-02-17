@@ -18,4 +18,15 @@ class Request
     {
         return !empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
     }
+
+    /**
+     * Get POST param
+     * @param string $name
+     * @param mixed $default default value is null
+     * @return mixed
+     */
+    public function getPost($name,$default = null)
+    {
+        return isset($_POST[$name]) ? $_POST[$name] : $default;
+    }
 }

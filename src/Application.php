@@ -37,13 +37,15 @@ class Application implements ApplicationInterface, ConstructorInjectableInterfac
             /** @var \Framework\Interfaces\ResponseInterface $response */
             $this->ioc->register('currentController', $controller);
             $controller = $this->ioc->build('currentController');
-            $action   = $router->getAction();
-            $methods = get_class_methods($controller);
-            if(in_array($action,$methods)){
+            $action     = $router->getAction();
+            $methods    = get_class_methods($controller);
+            if (in_array($action, $methods)) {
                 $response = $controller->{$action}();
-            }else{
+            } else {
                 $response = $this->getErrorResponse();
             }
+        }elseif($router->isRedirect()){
+
         } else {
             $response = $this->getErrorResponse();
         }
@@ -56,5 +58,10 @@ class Application implements ApplicationInterface, ConstructorInjectableInterfac
     protected function getErrorResponse()
     {
         return $this->ioc->build('errorController')->actionIndex();
+    }
+
+    protected function redirect($to)
+    {
+
     }
 }

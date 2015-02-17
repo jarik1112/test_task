@@ -5,6 +5,8 @@
  * @time 12:49 PM
  */
 
+define('ROOT_DIR',realpath(__DIR__));
+define('VIEW_DIR',ROOT_DIR.'/view');
 
 require_once __DIR__.'/src/autoload.php';
 
@@ -16,4 +18,8 @@ $container->register('app','Framework\Application');
 $container->register('request','Framework\Request');
 $container->register('response','Framework\Response');
 $container->register('errorController','Framework\Controllers\ErrorController');
+$container->register('viewConfig',array(
+    'layout'=>'/layout.php',
+    'viewDir'=>VIEW_DIR
+));
 $container->build('app')->run();

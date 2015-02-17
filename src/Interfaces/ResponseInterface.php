@@ -10,11 +10,6 @@ namespace Framework\Interfaces;
 
 interface ResponseInterface
 {
-    /**
-     * @param string $view
-     * @param array  $renderData
-     */
-    public function __construct($view, $renderData = array());
 
     /**
      * Send response to browser
@@ -38,4 +33,16 @@ interface ResponseInterface
      */
     public function getHttpCode();
 
+    /**
+     * Set data to view
+     * @param array $data
+     * @return mixed
+     */
+    public function setData(array $data);
+
+    /**
+     * @param string $view
+     * @return mixed
+     */
+    public function setView($view);
 }

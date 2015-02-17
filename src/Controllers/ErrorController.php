@@ -24,7 +24,9 @@ class ErrorController extends BaseController
      */
     public function actionIndex()
     {
-        $response = new Response('Error');
+        /** @var \Framework\Response $response */
+        $response = $this->ioc->build('response');
+        $response->setView('error.php');
         $response->setHttpCode(404);
         return $response;
     }

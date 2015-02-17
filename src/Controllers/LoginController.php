@@ -9,11 +9,18 @@ namespace Framework\Controllers;
 
 
 use Framework\BaseController;
+use Framework\Response;
 
 class LoginController extends BaseController
 {
     public function index()
     {
+        /** @var \Framework\Request $request */
+        $request = $this->ioc->build('request');
 
+        /** @var  \Framework\Response $response */
+        $response = $this->ioc->build('response');
+        $response->setView('login.php',array());
+        return $response;
     }
 }

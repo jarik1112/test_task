@@ -8,18 +8,52 @@
 namespace Framework;
 
 
+use Framework\Interfaces\ConstructorInjectableInterface;
+use Framework\Interfaces\IocContainerInterface;
 use Framework\Interfaces\ResponseInterface;
 
-class Response implements ResponseInterface
+class Response implements ResponseInterface, ConstructorInjectableInterface
 {
+    /**
+     * Path to view file
+     *
+     * @var string
+     */
     protected $view;
+
+    /**
+     * Data to view
+     *
+     * @var array
+     */
     protected $data = array();
 
-    public function __construct($view, $renderData = array())
+    /**
+     * Path to view folder
+     *
+     * @var string
+     */
+    protected $viewFolder;
+
+    /**
+     * Path to layout file
+     *
+     * @var string
+     */
+    protected $layout;
+    /**
+     * @var IocContainerInterface
+     */
+    protected $ioc;
+
+    public function __construct(IocContainerInterface $container)
     {
-        $this->view = $view;
-        $this->data = $renderData;
+        $this->ioc = $container;
+        $config = $this->ioc->build('viewConfig');
+        $this->viewFolder = $config['viewDir'];
+        $this->layout = $config['layout'];
     }
+
 
     /**
      * Http code
@@ -30,17 +64,29 @@ class Response implements ResponseInterface
 
     public function send()
     {
-        extract($this->data);
+        $this->data['content'] = $this->renderView($this->resolveViewPath($this->view), $this->data);
+        $view = $this->renderView($this->resolveViewPath($this->layout),$this->data);
+        $this->sendCode();
+        echo $view;
+    }
+
+    protected function renderView($view, $data)
+    {
+        extract($data);
         ob_start();
-        if (file_exists($this->view)) {
-            include $this->view;
-        } else {
-            echo $this->view;
-        }
-        $response = ob_get_contents();
+        include $view;
+        $content  =  ob_get_contents();
         ob_end_clean();
-        $this->_sendCode();
-        echo $response;
+        return $content;
+    }
+
+    protected function resolveViewPath($path)
+    {
+        $result = $this->viewFolder.'/'.$path;
+        if(!file_exists($result)){
+            throw new \Exception('View "'.$result.'" not found');
+        }
+        return $result;
     }
 
     /**
@@ -64,7 +110,10 @@ class Response implements ResponseInterface
         return $this->code;
     }
 
-    protected function _sendCode()
+    /**
+     * Send response code to client
+     */
+    protected function sendCode()
     {
         $codeText = array(
             404 => 'Not Found',
@@ -74,4 +123,32 @@ class Response implements ResponseInterface
         header("HTTP/1.0 {$this->code} {$codeText[$this->code]}");
     }
 
+    /**
+     * Set data to view
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function setData(array $data)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * Set view
+     *
+     * @param string $view
+     * @return mixed
+     */
+    public function setView($view)
+    {
+        $this->view = $view;
+    }
+
+    public function redirect($path)
+    {
+        $this->code = 302;
+        $this->sendCode();
+        header('Location: '.$path);
+    }
 }
