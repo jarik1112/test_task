@@ -51,19 +51,20 @@ class RegisterController extends BaseController
     {
         /** @var \Framework\Request $request */
         $request = $this->ioc->build('request');
-        $hash = $request->getParam('h');
-        /** @var \Framework\UserStorageInterface $userStorage */
+        /** @var \Framework\Interfaces\UserStorageInterface $userStorage */
         $userStorage = $this->ioc->build('userStorage');
         /** @var  \Framework\Response $response */
         $response = $this->ioc->build('response');
+        $hash = $request->getParam('h');
         if(!is_null($hash) && ($user = $userStorage->findBy(array('confirm_hash'=>$hash)))){
             $_SESSION['logged_in'] = true;
+            $user['is_email_confirmed'] = 'y';
+            $userStorage->save($user);
             $this->ioc->unregister('userStorage');
             $this->ioc->register('userStorage','Framework\XmlUserStorage');
             $this->ioc->build('userStorage')->save($user);
             $response->redirect('/');
         }
-        var_dump($user);die;
         $response->redirect('/login');
     }
 

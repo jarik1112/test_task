@@ -9,10 +9,10 @@
 <form class="login" action="/login" method="post">
     <label>Login Form</label>
     <label>
-        <input type="text" placeholder="Email" name="email">
+        <input type="text" placeholder="Email" name="user[email]">
     </label>
     <label>
-        <input type="text" name="password" placeholder="Password">
+        <input type="password" name="user[password]" placeholder="Password">
     </label>
     <label>
         <input type="submit" name="submit" value="Login">

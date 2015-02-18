@@ -12,5 +12,10 @@ use Framework\BaseController;
 
 class IndexController extends BaseController
 {
-
+    public function index()
+    {
+        $response = $this->ioc->build('response');
+        $response->setView('index.php',array());
+        return $response;
+    }
 }

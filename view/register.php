@@ -24,7 +24,7 @@
         <input type="text" placeholder="Last Name" name="user[last_name]">
     </label>
     <label>
-        <input type="text" placeholder="Password" name="user[password]">
+        <input type="password" placeholder="Password" name="user[password]">
     </label>
     <label>
         <input type="submit" name="submit" value="Save">
