@@ -11,6 +11,11 @@ namespace Framework\Controllers;
 use Framework\BaseController;
 use Framework\Response;
 
+/**
+ * Class RegisterController
+ *
+ * @package Framework\Controllers
+ */
 class RegisterController extends BaseController
 {
     public function index()
@@ -24,15 +29,15 @@ class RegisterController extends BaseController
         /** @var  \Framework\Response $response */
         $response = $this->ioc->build('response');
         if ($user && $userStorage->validate($user)) {
-            $hash = dechex(microtime(true));
+            $hash                 = dechex(microtime(true));
             $user['confirm_hash'] = $hash;
-            $saveState = $userStorage->save($user);
-            if(!$saveState){
+            $saveState            = $userStorage->save($user);
+            if (!$saveState) {
                 throw new \Exception('Can\' save user');
             }
             $sentResult = $this->ioc->build('mailer')->send(
                 'Confirm you email',
-                '<a href="http://'.$request->getHost().'/confirm?h='.$hash.'">Link</a>',
+                '<a href="http://' . $request->getHost() . '/confirm?h=' . $hash . '">Link</a>',
                 $user['email']
             );
             $response->redirect('/confirmation');
@@ -55,13 +60,13 @@ class RegisterController extends BaseController
         $userStorage = $this->ioc->build('userStorage');
         /** @var  \Framework\Response $response */
         $response = $this->ioc->build('response');
-        $hash = $request->getParam('h');
-        if(!is_null($hash) && ($user = $userStorage->findBy(array('confirm_hash'=>$hash)))){
-            $_SESSION['logged_in'] = true;
+        $hash     = $request->getParam('h');
+        if (!is_null($hash) && ($user = $userStorage->findBy(array('confirm_hash' => $hash)))) {
+            $_SESSION['logged_in']      = true;
             $user['is_email_confirmed'] = 'y';
             $userStorage->save($user);
             $this->ioc->unregister('userStorage');
-            $this->ioc->register('userStorage','Framework\XmlUserStorage');
+            $this->ioc->register('userStorage', 'Framework\XmlUserStorage');
             $this->ioc->build('userStorage')->save($user);
             $response->redirect('/');
             exit;
