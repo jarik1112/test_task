@@ -64,6 +64,7 @@ class RegisterController extends BaseController
             $this->ioc->register('userStorage','Framework\XmlUserStorage');
             $this->ioc->build('userStorage')->save($user);
             $response->redirect('/');
+            exit;
         }
         $response->redirect('/login');
     }
